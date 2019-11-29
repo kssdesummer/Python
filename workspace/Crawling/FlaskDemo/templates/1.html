@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试网页</title>
+    <script src="/static/js/jquery-3.4.1.min.js" type="application/javascript"></script>
+</head>
+<body>
+<h2>测试web页面是否可用</h2>
+<button>$.get</button>
+<button>$.get带参数</button>
+<button>$.post</button>
+<button>$.post带参数</button>
+<button>$.ajax</button>
+<div></div>
+<table width="300px" border="1px" cellspacing="0">
+    <tr>
+        <td>姓名</td>
+        <td>年龄</td>
+    </tr>
+</table>
+
+<script type="text/javascript">
+    // ajax 当页面不刷新时请求数据,并更新网页的局部内容
+    // $.get 单机按钮箱后台发送数据
+    $("button").eq(0).click(function () {
+        // 发送不带参数的请求
+        //      1.请求地址
+        //      2.回调函数
+        $.get('/hello', function (data) {
+            console.log(data);
+            // 拿到数据后通过DOM将数据更新到页面
+            $('div').html(data);
+        })
+    });
+
+    // get带参数
+    $("button").eq(0).click(function () {
+        $.get('/msg', {name: "erha", age: 18}, function (data) {
+            console.log(data);
+            // 拿到数据后通过DOM将数据更新到页面\
+        })
+    });
+
+    // post请求
+    $('button').eq(2).click(function () {
+        $.post('/posts', function (data) {
+            console.log(data);
+            $('div').html(data)
+        })
+    });
+
+    // post带参数的请求,指定返回json
+    $("button").eq(3).click(function () {
+        $.post('/msgposts', {uname: 'liya', age: 18}, function (data) {
+            var el = $('table tr:first-child').clone();
+            el.find('td:eq(0)').html(data.uname);
+            el.find('td:eq(1)').html(data.age);
+            el.appendTo($('table'));
+        }, 'json')
+    });
+
+    // ajax请求
+    $('button').eq(4).click(function () {
+        var a = 1;
+        var datas = {name: 'lihua', age: 19};
+        $.ajax({
+            url: '/ajax',
+            type: "POST",
+            data: datas,
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                a++;
+                console.log("ajax inner:", a)
+            },
+            error: function () {
+                alert('ajax执行错误')
+            },
+            // 网页路由设置了sleep4秒,所以当两秒的时候跳转到error函数
+            timeout: 5000,
+            // 异步操作时,ajax请求的同时可以进行别的
+            // 即程序会先输出外部的结果
+            async: true,
+        });
+        console.log("ajax out:", a);
+    });
+
+
+</script>
+</body>
+</html>
